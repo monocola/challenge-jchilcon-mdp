@@ -76,6 +76,8 @@ paths:
 
 
 
+
+
 components:
   schemas:
     ProductResponse:
@@ -95,6 +97,9 @@ components:
           minLength: 36
           maxLength: 36
         name:
+          type: string
+          example: Galleta
+        categoryName:
           type: string
           example: Galleta
         unityPrice:

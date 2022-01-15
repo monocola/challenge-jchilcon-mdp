@@ -38,9 +38,8 @@ public class Product implements java.io.Serializable{
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @JsonProperty("categoryId")
-    @Column(name= "category_id")
-    private UUID categoryId;
+    @JsonProperty("categoryName")
+    private String categoryName;
 
     @JsonProperty("name")
     private String name;

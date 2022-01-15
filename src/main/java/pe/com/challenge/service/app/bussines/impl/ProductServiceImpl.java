@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import pe.com.challenge.service.app.bussines.IProductService;
 import pe.com.challenge.service.app.entity.Product;
 import pe.com.challenge.service.app.repository.ProductRepository;
+import pe.com.challenge.service.app.util.Constant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +36,10 @@ public class ProductServiceImpl implements IProductService {
         productList.forEach(p ->{
             ProductResponseBody productResponseBody = new ProductResponseBody();
             productResponseBody.setId(p.getId().toString());
+            productResponseBody.setCategoryName(p.getCategoryName());
             productResponseBody.setName(p.getName());
             productResponseBody.setUnityPrice(p.getUnityPrice());
-            productResponseBody.setState(1);
+            productResponseBody.setState(Constant.INTEGER_ESTADO_ACTIVO);
             productResponseBody.setCreatedAt(p.getCreatedAt().toString());
             productResponseBodyArrayList.add(productResponseBody);
 

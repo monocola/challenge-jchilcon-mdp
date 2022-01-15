@@ -2,6 +2,7 @@ package pe.com.challenge.service.app.expose.web;
 
 import io.reactivex.Single;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.com.challenge.service.app.bussines.IOrderService;
@@ -19,6 +20,7 @@ public class OrderDetailApi {
     public IOrderService iOrderService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Single<OrderDetail> create(@RequestBody OrderDetail orderRequest) {
         return Single.just(iOrderService.createOrderDetail(orderRequest));
 

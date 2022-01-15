@@ -4,6 +4,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.swagger.client.model.ProductResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class ProductApi {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Single<Product> create(@RequestBody Product product) {
         return Single.just(iProductService.createProduct(product));
 

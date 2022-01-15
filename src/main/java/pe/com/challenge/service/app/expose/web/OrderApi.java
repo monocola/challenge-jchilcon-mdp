@@ -4,12 +4,15 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.swagger.client.model.OrderResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.com.challenge.service.app.bussines.IOrderService;
+import pe.com.challenge.service.app.dto.order.OrderDTO;
 import pe.com.challenge.service.app.entity.Order;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -30,8 +33,8 @@ public class OrderApi {
     }
 
     @GetMapping("/{id}")
-    public Maybe<ResponseEntity<OrderResponse>> getOrderById(@PathVariable UUID id) {
-        return Maybe.just(
+    public Maybe<ResponseEntity<OrderDTO>> getOrderById(@PathVariable UUID id) {
+         return Maybe.just(
                 ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(iOrderService.getOrderById(id)));
@@ -40,6 +43,7 @@ public class OrderApi {
 
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Single<Order> create(@RequestBody Order orderRequest) {
         return Single.just(iOrderService.createOrder(orderRequest));
 

@@ -3,6 +3,7 @@ package pe.com.challenge.service.app.bussines;
 
 import io.reactivex.Completable;
 import io.swagger.client.model.OrderResponse;
+import pe.com.challenge.service.app.dto.order.OrderDTO;
 import pe.com.challenge.service.app.entity.Order;
 import pe.com.challenge.service.app.entity.OrderDetail;
 
@@ -22,7 +23,7 @@ public interface IOrderService {
 
     OrderResponse getOrders();
 
-    OrderResponse getOrderById(UUID orderDetailId);
+    OrderDTO getOrderById(UUID orderDetailId);
 
     Optional<OrderDetail> getOrderDetailByID(UUID orderDetailId);
 

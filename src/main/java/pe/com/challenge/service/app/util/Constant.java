@@ -8,6 +8,9 @@ public class Constant {
     public static Integer INTEGER_ESTADO_PENDIENTE = 1;
     public static Integer INTEGER_ESTADO_COMPLETADO = 2;
     public static Integer INTEGER_ESTADO_RECHAZADO = 3;
+    public static Integer INTEGER_ESTADO_ACTIVO = 1;
+    public static Integer INTEGER_ESTADO_INACTIVO = 0;
+
 
     //percentages:
     public static float FLOAT_0_10 = (float) 0.10;
