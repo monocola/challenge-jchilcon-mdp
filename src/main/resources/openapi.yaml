@@ -1,0 +1,179 @@
+openapi: 3.0.0
+info:
+  version: 1.0.1
+  title: ORDERS
+  description: web to orders
+
+servers:
+  - url: "/my-orders"
+
+paths:
+  "/products":
+    get:
+      description: Permite obtener lista de productos.
+
+      parameters:
+        - in: query
+          name: caregoryid
+          required: true
+          description: codigo de categoría
+          schema:
+            type: string
+            example: 'aa0bb5c3-2538-4b4d-a899-3542c1c2175f'
+            minLength: 36
+            maxLength: 36
+
+      responses:
+        200:
+          description: Sucessfull request
+          content:
+            application/stream+json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+
+        404:
+          description: Request not fount
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {"message": "Error 404. Page or request not fount."}
+        500:
+          description: Request not fount
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {"message": "Error 500. Error internal."}
+
+
+  "/orders":
+    get:
+      description: Permite obtener lista de ordenes.
+
+      responses:
+        200:
+          description: Sucessfull request
+          content:
+            application/stream+json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+
+        404:
+          description: Request not fount
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {"message": "Error 404. Page or request not fount."}
+        500:
+          description: Request not fount
+          content:
+            application/json:
+              schema:
+                type: string
+                example: {"message": "Error 500. Error internal."}
+
+
+
+components:
+  schemas:
+    ProductResponse:
+      title: ProductResponse
+      type: object
+      properties:
+        Products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductResponseBody'
+    ProductResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'aa0bb5c3-2538-4b4d-a899-3542c1c2175f'
+          minLength: 36
+          maxLength: 36
+        name:
+          type: string
+          example: Galleta
+        unityPrice:
+          type: number
+          format: float
+          example: 500.00
+        state:
+          type: integer
+        createdAt:
+          type: string
+          example: '2022-01-14'
+    OrderResponse:
+      title: OrderResponse
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderResponseBody'
+    OrderResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'aa0bb5c3-2538-4b4d-a899-3542c1c2175f'
+          minLength: 36
+          maxLength: 36
+        orderNumber:
+          type: string
+          example: 0123-456
+        customer:
+          type: string
+          example: 'juan perez'
+        state:
+          type: integer
+        createdAt:
+          type: string
+          example: '2022-01-14'
+        subTotal:
+          type: string
+        totalCityTax:
+          type: string
+        totalCountTax:
+          type: string
+        totalStateTax:
+          type: string
+        totalFederalTax:
+          type: string
+        totalTax:
+          type: string
+        total:
+          type: string
+        OrderDetail:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderDetail'
+    OrderDetail:
+      type: object
+      properties:
+        orderDetailId:
+          type: string
+          minLength: 36
+          maxLength: 36
+          example: 'aa0bb5c3-2538-4b4d-a899-3542c1c2175f'
+        productId:
+          type: string
+          example: 'aa0bb5c3-2538-4b4d-a899-3542c1c2175f'
+          minLength: 36
+          maxLength: 36
+        productName:
+          type: string
+          example: Galleta
+        quantity:
+          type: string
+        unityPrice:
+          type: string
+        totalAmount:
+          type: string
+        createdAt:
+          type: string
+          example: '2022-01-14'
+
