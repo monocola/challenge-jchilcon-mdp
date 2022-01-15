@@ -26,7 +26,7 @@ public interface IOrderService {
 
     Optional<OrderDetail> getOrderDetailByID(UUID orderDetailId);
 
-    public void deleteProduct(UUID orderDetailId, UUID productId);
+    public void deleteProductByOrderDetail(UUID orderDetailId);
 
     void updateStateCompleteOrderById(UUID orderId);
 

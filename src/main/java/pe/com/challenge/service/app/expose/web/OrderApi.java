@@ -37,14 +37,7 @@ public class OrderApi {
                         .body(iOrderService.getOrderById(id)));
     }
 
-    @DeleteMapping("/producto/{orderid}/{productid}")
-    public Single<ResponseEntity<Void>> deleteProductInOrder(@PathVariable UUID orderid, @PathVariable UUID productid){
-        if(!iOrderService.getOrderDetailByID(orderid).isPresent()) {
-            return Single.just(ResponseEntity.notFound().build());
-        }
-        iOrderService.deleteProduct(orderid, productid);
-        return Single.just(ResponseEntity.ok().build());
-    }
+
 
     @PostMapping
     public Single<Order> create(@RequestBody Order orderRequest) {

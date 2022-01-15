@@ -142,8 +142,8 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public void deleteProduct(UUID orderDetailId, UUID productId) {
-        orderDetailsRepository.deleteProduct(orderDetailId, productId);
+    public void deleteProductByOrderDetail(UUID orderDetailId) {
+        orderDetailsRepository.deleteById(orderDetailId);
     }
 
     @Override
