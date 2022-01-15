@@ -22,9 +22,15 @@ public interface IOrderService {
 
     OrderResponse getOrders();
 
+    OrderResponse getOrderById(UUID orderDetailId);
+
     Optional<OrderDetail> getOrderDetailByID(UUID orderDetailId);
 
-    public void deleteProduct(UUID orderDetailId);
+    public void deleteProduct(UUID orderDetailId, UUID productId);
+
+    void updateStateCompleteOrderById(UUID orderId);
+
+    void updateStateRejectOrderById(UUID orderId);
 
     public Order createOrder(Order order);
 

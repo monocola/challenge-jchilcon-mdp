@@ -10,7 +10,7 @@ import pe.com.challenge.service.app.entity.OrderDetail;
 import pe.com.challenge.service.app.repository.OrderDetailsRepository;
 import pe.com.challenge.service.app.repository.OrderRepository;
 import pe.com.challenge.service.app.util.Constant;
-import pe.com.challenge.service.app.util.Utils;
+import pe.com.challenge.service.app.bussines.rulers.Tax;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,15 +42,11 @@ public class OrderServiceImpl implements IOrderService {
         List<Order> orderList = orderRepository.findAll();
         orderList.forEach(or ->{
             AtomicReference<Float> preSubtotal = new AtomicReference<>(Constant.FLOAT_CERO);
-            AtomicReference<Float> total = new AtomicReference<>(Constant.FLOAT_CERO);
             OrderResponseBody orderResponseBody = new OrderResponseBody();
             orderResponseBody.setId(or.getId().toString());
             orderResponseBody.setOrderNumber(or.getOrderNumber());
             orderResponseBody.setCustomer(or.getCustomer());
-
-
-
-            orderResponseBody.setState(1);
+            orderResponseBody.setState(or.getState());
             orderResponseBody.setCreatedAt(or.getCreatedAt().toString());
             List<OrderDetail> orderDetails = orderDetailsRepository.findOrderDetailById(or.getId());
             List<io.swagger.client.model.OrderDetail> orderDetails1 = new ArrayList<>();
@@ -73,18 +69,68 @@ public class OrderServiceImpl implements IOrderService {
 
             //taxes:
             orderResponseBody.setSubTotal(subTotal);
-            orderResponseBody.setTotalCityTax(Utils.getTotalCityTax(subTotal));
-            orderResponseBody.setTotalCountTax(Utils.getTotalCountTax(subTotal, orderResponseBody.getTotalCityTax()) );
-            orderResponseBody.setTotalStateTax(Utils.getTotalStateTax(subTotal, orderResponseBody.getTotalCityTax(),
+            orderResponseBody.setTotalCityTax(Tax.getTotalCityTax(subTotal));
+            orderResponseBody.setTotalCountTax(Tax.getTotalCountTax(subTotal, orderResponseBody.getTotalCityTax()) );
+            orderResponseBody.setTotalStateTax(Tax.getTotalStateTax(subTotal, orderResponseBody.getTotalCityTax(),
                     orderResponseBody.getTotalCountTax()));
-            orderResponseBody.setTotalFederalTax(Utils.getTotalFederalTax(subTotal, orderResponseBody.getTotalCityTax(),
+            orderResponseBody.setTotalFederalTax(Tax.getTotalFederalTax(subTotal, orderResponseBody.getTotalCityTax(),
                     orderResponseBody.getTotalCountTax(), orderResponseBody.getTotalStateTax()));
-            orderResponseBody.setTotalTax(Utils.getTotalTax(orderResponseBody.getTotalCityTax(), orderResponseBody.getTotalCountTax(),
+            orderResponseBody.setTotalTax(Tax.getTotalTax(orderResponseBody.getTotalCityTax(), orderResponseBody.getTotalCountTax(),
                     orderResponseBody.getTotalStateTax(), orderResponseBody.getTotalFederalTax()));
-            orderResponseBody.setTotal(Utils.getTotal(subTotal, orderResponseBody.getTotalTax()));
+            orderResponseBody.setTotal(Tax.getTotal(subTotal, orderResponseBody.getTotalTax()));
 
             responseBodyList.add(orderResponseBody);
         });
+
+        orderResponse.setOrders(responseBodyList);
+        return orderResponse;
+    }
+
+    @Override
+    public OrderResponse getOrderById(UUID orderDetailId) {
+        OrderResponse orderResponse = new OrderResponse();
+        List<OrderResponseBody>  responseBodyList = new ArrayList<>();
+        Optional<Order> order = orderRepository.findById(orderDetailId);
+            AtomicReference<Float> preSubtotal = new AtomicReference<>(Constant.FLOAT_CERO);
+            OrderResponseBody orderResponseBody = new OrderResponseBody();
+            orderResponseBody.setId(order.get().getId().toString());
+            orderResponseBody.setOrderNumber(order.get().getOrderNumber());
+            orderResponseBody.setCustomer(order.get().getCustomer());
+            orderResponseBody.setState(order.get().getState());
+            orderResponseBody.setCreatedAt(order.get().getCreatedAt().toString());
+            List<OrderDetail> orderDetails = orderDetailsRepository.findOrderDetailById(order.get().getId());
+            List<io.swagger.client.model.OrderDetail> orderDetailSingle = new ArrayList<>();
+
+            orderDetails.forEach(ord ->{
+                preSubtotal.updateAndGet(v -> new Float((float) (v + ord.getTotalAmount())));
+                io.swagger.client.model.OrderDetail orderDetail = new io.swagger.client.model.OrderDetail();
+                orderDetail.setOrderDetailId(ord.getId().toString());
+                orderDetail.setProductId(ord.getProductId().toString());
+                //orderDetail.setProductName(ord.getProductName());
+                orderDetail.setQuantity(String.valueOf((ord.getQuantity())));
+                orderDetail.setUnityPrice(String.valueOf(ord.getUnityPrice()));
+                orderDetail.setTotalAmount(String.valueOf(ord.getTotalAmount()));
+                orderDetail.setCreatedAt(ord.getCreatedAt().toString());
+
+                orderDetailSingle.add(orderDetail);
+                orderResponseBody.setOrderDetail(orderDetailSingle);
+            });
+            String subTotal = preSubtotal.toString();
+
+            //taxes:
+            orderResponseBody.setSubTotal(subTotal);
+            orderResponseBody.setTotalCityTax(Tax.getTotalCityTax(subTotal));
+            orderResponseBody.setTotalCountTax(Tax.getTotalCountTax(subTotal, orderResponseBody.getTotalCityTax()) );
+            orderResponseBody.setTotalStateTax(Tax.getTotalStateTax(subTotal, orderResponseBody.getTotalCityTax(),
+                    orderResponseBody.getTotalCountTax()));
+            orderResponseBody.setTotalFederalTax(Tax.getTotalFederalTax(subTotal, orderResponseBody.getTotalCityTax(),
+                    orderResponseBody.getTotalCountTax(), orderResponseBody.getTotalStateTax()));
+            orderResponseBody.setTotalTax(Tax.getTotalTax(orderResponseBody.getTotalCityTax(), orderResponseBody.getTotalCountTax(),
+                    orderResponseBody.getTotalStateTax(), orderResponseBody.getTotalFederalTax()));
+            orderResponseBody.setTotal(Tax.getTotal(subTotal, orderResponseBody.getTotalTax()));
+
+            responseBodyList.add(orderResponseBody);
+
 
         orderResponse.setOrders(responseBodyList);
         return orderResponse;
@@ -96,24 +142,40 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public void deleteProduct(UUID orderDetailId) {
-        orderDetailsRepository.deleteById(orderDetailId);
+    public void deleteProduct(UUID orderDetailId, UUID productId) {
+        orderDetailsRepository.deleteProduct(orderDetailId, productId);
+    }
+
+    @Override
+    public void updateStateCompleteOrderById(UUID orderId) {
+        Order order = orderRepository.getOne(orderId);
+        order.setState(Constant.INTEGER_ESTADO_COMPLETADO);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public void updateStateRejectOrderById(UUID orderId) {
+        Order order = orderRepository.getOne(orderId);
+        order.setState(Constant.INTEGER_ESTADO_RECHAZADO);
+        orderRepository.save(order);
     }
 
     @Override
     public Order createOrder(Order orderEntity) {
-        orderEntity.setOrderNumber(Utils.generateOrderNumber());
-        orderEntity.setQuantityTax(0);
-        orderEntity.setTotalTax(0);
-        orderEntity.setQuantityTotal(0);
-        orderEntity.setUnityPrice(0);
-        orderEntity.setState(1);
+        orderEntity.setOrderNumber(Tax.generateOrderNumber());
+        orderEntity.setQuantityTax(Constant.INTEGER_CERO);
+        orderEntity.setTotalTax(Constant.INTEGER_CERO);
+        orderEntity.setQuantityTotal(Constant.INTEGER_CERO);
+        orderEntity.setUnityPrice(Constant.INTEGER_CERO);
+        orderEntity.setState(Constant.INTEGER_ESTADO_PENDIENTE);
         orderEntity.setCustomer("JORGE CHILCON");
         return orderRepository.save(orderEntity);
     }
 
     @Override
     public OrderDetail createOrderDetail(OrderDetail orderDetail) {
+       float totalAmount = orderDetail.getQuantity() * orderDetail.getUnityPrice();
+        orderDetail.setTotalAmount(totalAmount);
        return orderDetailsRepository.save(orderDetail);
 
     }

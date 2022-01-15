@@ -29,12 +29,20 @@ public class OrderApi {
                         .body(iOrderService.getOrders()));
     }
 
-    @DeleteMapping("/eliminarproducto/{id}")
-    public Single<ResponseEntity<Void>> deleteProductInOrder(@PathVariable UUID id){
-        if(!iOrderService.getOrderDetailByID(id).isPresent()) {
+    @GetMapping("/{id}")
+    public Maybe<ResponseEntity<OrderResponse>> getOrderById(@PathVariable UUID id) {
+        return Maybe.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(iOrderService.getOrderById(id)));
+    }
+
+    @DeleteMapping("/producto/{orderid}/{productid}")
+    public Single<ResponseEntity<Void>> deleteProductInOrder(@PathVariable UUID orderid, @PathVariable UUID productid){
+        if(!iOrderService.getOrderDetailByID(orderid).isPresent()) {
             return Single.just(ResponseEntity.notFound().build());
         }
-        iOrderService.deleteProduct(id);
+        iOrderService.deleteProduct(orderid, productid);
         return Single.just(ResponseEntity.ok().build());
     }
 
@@ -42,5 +50,15 @@ public class OrderApi {
     public Single<Order> create(@RequestBody Order orderRequest) {
         return Single.just(iOrderService.createOrder(orderRequest));
 
+    }
+
+    @PutMapping("/completada/{id}")
+    public void updateStateCompleteOrderById(@PathVariable UUID id) {
+        iOrderService.updateStateCompleteOrderById(id);
+    }
+
+    @PutMapping("/rechazada/{id}")
+    public void updateStateRejectOrderById(@PathVariable UUID id) {
+        iOrderService.updateStateRejectOrderById(id);
     }
 }
