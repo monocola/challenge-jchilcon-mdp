@@ -9,7 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.com.challenge.service.app.bussines.IProductService;
+import pe.com.challenge.service.app.dto.order.OrderDTO;
+import pe.com.challenge.service.app.dto.product.ProductDTO;
 import pe.com.challenge.service.app.entity.Product;
+
+import java.util.UUID;
 
 
 @RestController
@@ -33,5 +37,28 @@ public class ProductApi {
     public Single<Product> create(@RequestBody Product product) {
         return Single.just(iProductService.createProduct(product));
 
+    }
+
+    @DeleteMapping("/{productid}")
+    public Single<ResponseEntity<Void>> deleteProductInOrder(@PathVariable UUID productid){
+        if(!iProductService.findProductById(productid).isPresent()) {
+            return Single.just(ResponseEntity.notFound().build());
+        }
+        iProductService.deleteProduct(productid);
+        return Single.just(ResponseEntity.ok().build());
+    }
+
+    @GetMapping("/{id}")
+    public Maybe<ResponseEntity<ProductDTO>> getOrderById(@PathVariable UUID id) {
+        return Maybe.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(iProductService.findProductDTOById(id)));
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void updateProduct(@RequestBody Product product) {
+        iProductService.updateProduct(product);
     }
 }

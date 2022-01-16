@@ -2,7 +2,6 @@ package pe.com.challenge.service.app.dto.order;
 
 import io.swagger.client.model.OrderDetail;
 import lombok.Data;
-import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
