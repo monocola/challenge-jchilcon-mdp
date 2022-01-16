@@ -1,11 +1,15 @@
 package pe.com.challenge.service.app.expose.web;
 
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.com.challenge.service.app.bussines.IOrderService;
+import pe.com.challenge.service.app.dto.order.OrderDTO;
+import pe.com.challenge.service.app.dto.orderdetail.OrderDetailDTO;
 import pe.com.challenge.service.app.entity.Order;
 import pe.com.challenge.service.app.entity.OrderDetail;
 
@@ -33,6 +37,19 @@ public class OrderDetailApi {
         }
         iOrderService.deleteProductByOrderDetail(orderid);
         return Single.just(ResponseEntity.ok().build());
+    }
+
+    @PutMapping
+    public void updateStateCompleteOrderById(@RequestBody OrderDetail orderDetail) {
+        iOrderService.updateOrderDetail(orderDetail);
+    }
+
+    @GetMapping("/{id}")
+    public Maybe<ResponseEntity<OrderDetailDTO>> getOrderById(@PathVariable UUID id) {
+        return Maybe.just(
+                ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(iOrderService.getOrderDetailById(id)));
     }
 
 

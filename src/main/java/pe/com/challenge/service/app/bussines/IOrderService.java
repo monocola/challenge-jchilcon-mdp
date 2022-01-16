@@ -4,6 +4,7 @@ package pe.com.challenge.service.app.bussines;
 import io.reactivex.Completable;
 import io.swagger.client.model.OrderResponse;
 import pe.com.challenge.service.app.dto.order.OrderDTO;
+import pe.com.challenge.service.app.dto.orderdetail.OrderDetailDTO;
 import pe.com.challenge.service.app.entity.Order;
 import pe.com.challenge.service.app.entity.OrderDetail;
 
@@ -36,5 +37,11 @@ public interface IOrderService {
     public Order createOrder(Order order);
 
     public OrderDetail addProductToOrderDetail(OrderDetail orderDetail);
+
+    void updateOrderDetail(OrderDetail orderDetail);
+
+    public OrderDetailDTO getOrderDetailById(UUID orderDetailId);
+
+
 
 }

@@ -3,9 +3,11 @@ package pe.com.challenge.service.app.bussines.impl;
 import io.swagger.client.model.OrderResponse;
 import io.swagger.client.model.OrderResponseBody;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.DisposableSqlTypeValue;
 import org.springframework.stereotype.Service;
 import pe.com.challenge.service.app.bussines.IOrderService;
 import pe.com.challenge.service.app.dto.order.OrderDTO;
+import pe.com.challenge.service.app.dto.orderdetail.OrderDetailDTO;
 import pe.com.challenge.service.app.entity.Order;
 import pe.com.challenge.service.app.entity.OrderDetail;
 import pe.com.challenge.service.app.entity.Product;
@@ -15,6 +17,7 @@ import pe.com.challenge.service.app.repository.ProductRepository;
 import pe.com.challenge.service.app.util.Constant;
 import pe.com.challenge.service.app.bussines.rulers.Tax;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,11 +61,12 @@ public class OrderServiceImpl implements IOrderService {
             List<io.swagger.client.model.OrderDetail> orderDetails1 = new ArrayList<>();
 
             orderDetails.forEach(ord ->{
+                Product product = productRepository.findProductEntityById(ord.getProductId());
                 preSubtotal.updateAndGet(v -> new Float((float) (v + ord.getTotalAmount())));
                 io.swagger.client.model.OrderDetail orderDetail = new io.swagger.client.model.OrderDetail();
                 orderDetail.setOrderDetailId(ord.getId().toString());
                 orderDetail.setProductId(ord.getProductId().toString());
-                //orderDetail.setProductName(ord.getProductName());
+                orderDetail.setProductName(product.getName());
                 orderDetail.setQuantity(String.valueOf((ord.getQuantity())));
                 orderDetail.setUnityPrice(String.valueOf(ord.getUnityPrice()));
                 orderDetail.setTotalAmount(String.valueOf(ord.getTotalAmount()));
@@ -95,7 +99,7 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public OrderDTO getOrderById(UUID orderDetailId) {
         OrderDTO orderDTO = new OrderDTO();
-        //OrderResponse orderResponse = new OrderResponse();
+
         List<OrderResponseBody>  responseBodyList = new ArrayList<>();
         Optional<Order> order = orderRepository.findById(orderDetailId);
         AtomicReference<Float> preSubtotal = new AtomicReference<>(Constant.FLOAT_CERO);
@@ -109,12 +113,14 @@ public class OrderServiceImpl implements IOrderService {
         List<io.swagger.client.model.OrderDetail> orderDetailSingle = new ArrayList<>();
 
         orderDetails.forEach(ord ->{
+            Product productE = productRepository.findProductEntityById(ord.getProductId());
             preSubtotal.updateAndGet(v -> new Float((float) (v + ord.getTotalAmount())));
             io.swagger.client.model.OrderDetail orderDetail = new io.swagger.client.model.OrderDetail();
             orderDetail.setOrderDetailId(ord.getId().toString());
             orderDetail.setProductId(ord.getProductId().toString());
             orderDetail.setQuantity(String.valueOf((ord.getQuantity())));
             orderDetail.setUnityPrice(String.valueOf(ord.getUnityPrice()));
+            orderDetail.setProductName(productE.getName());
             orderDetail.setTotalAmount(String.valueOf(ord.getTotalAmount()));
             orderDetail.setCreatedAt(ord.getCreatedAt().toString());
             orderDTO.setSubTotal(preSubtotal.toString());
@@ -139,8 +145,6 @@ public class OrderServiceImpl implements IOrderService {
 
         responseBodyList.add(orderResponseBody);
 
-
-        //orderDTO.setOrderDetail(responseBodyList);
         return orderDTO;
     }
 
@@ -188,6 +192,36 @@ public class OrderServiceImpl implements IOrderService {
         orderDetail.setTotalAmount(totalAmount);
         return orderDetailsRepository.save(orderDetail);
 
+    }
+
+    @Override
+    public void updateOrderDetail(OrderDetail orderDetail) {
+     OrderDetail orderDetailT=  orderDetailsRepository.findOrderDetailEntityById(orderDetail.getId());
+     Product product = productRepository.findProductEntityById(orderDetailT.getProductId());
+     float totalAmount = orderDetail.getQuantity() * product.getUnityPrice();
+     orderDetailT.setQuantity(orderDetail.getQuantity());
+     orderDetailT.setUnityPrice(product.getUnityPrice());
+     orderDetailT.setTotalAmount(totalAmount);
+     Long datetime = System.currentTimeMillis();
+     Timestamp date = new Timestamp(datetime);
+     orderDetailT.setCreatedAt(date);
+     orderDetailsRepository.save(orderDetailT);
+
+    }
+
+    @Override
+    public OrderDetailDTO getOrderDetailById(UUID orderDetailId) {
+        OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
+        OrderDetail orderDetailT=  orderDetailsRepository.findOrderDetailEntityById(orderDetailId);
+        Product product = productRepository.findProductEntityById(orderDetailT.getProductId());
+        orderDetailDTO.setOrderDetailId(orderDetailT.getOrderId().toString());
+        orderDetailDTO.setProductId(orderDetailT.getProductId().toString());
+        orderDetailDTO.setProductName(product.getName());
+        orderDetailDTO.setQuantity(orderDetailT.getQuantity().toString());
+        orderDetailDTO.setUnityPrice(String.valueOf(orderDetailT.getUnityPrice()));
+        orderDetailDTO.setTotalAmount(String.valueOf(orderDetailT.getTotalAmount()));
+        orderDetailDTO.setCreatedAt(orderDetailT.getCreatedAt().toString());
+        return orderDetailDTO;
     }
 
 
