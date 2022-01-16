@@ -8,8 +8,10 @@ import pe.com.challenge.service.app.bussines.IOrderService;
 import pe.com.challenge.service.app.dto.order.OrderDTO;
 import pe.com.challenge.service.app.entity.Order;
 import pe.com.challenge.service.app.entity.OrderDetail;
+import pe.com.challenge.service.app.entity.Product;
 import pe.com.challenge.service.app.repository.OrderDetailsRepository;
 import pe.com.challenge.service.app.repository.OrderRepository;
+import pe.com.challenge.service.app.repository.ProductRepository;
 import pe.com.challenge.service.app.util.Constant;
 import pe.com.challenge.service.app.bussines.rulers.Tax;
 
@@ -32,6 +34,9 @@ public class OrderServiceImpl implements IOrderService {
 
     @Autowired
     public OrderRepository orderRepository;
+
+    @Autowired
+    public ProductRepository productRepository;
 
     @Autowired
     public OrderDetailsRepository orderDetailsRepository;
@@ -176,8 +181,10 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     @Override
-    public OrderDetail createOrderDetail(OrderDetail orderDetail) {
-        float totalAmount = orderDetail.getQuantity() * orderDetail.getUnityPrice();
+    public OrderDetail addProductToOrderDetail(OrderDetail orderDetail) {
+        Product product = productRepository.findProductEntityById(orderDetail.getProductId());
+        float totalAmount = orderDetail.getQuantity() * product.getUnityPrice();
+        orderDetail.setUnityPrice(product.getUnityPrice());
         orderDetail.setTotalAmount(totalAmount);
         return orderDetailsRepository.save(orderDetail);
 

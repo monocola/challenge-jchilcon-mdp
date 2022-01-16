@@ -21,8 +21,8 @@ public class OrderDetailApi {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Single<OrderDetail> create(@RequestBody OrderDetail orderRequest) {
-        return Single.just(iOrderService.createOrderDetail(orderRequest));
+    public Single<OrderDetail> addProduct(@RequestBody OrderDetail orderRequest) {
+        return Single.just(iOrderService.addProductToOrderDetail(orderRequest));
 
     }
 

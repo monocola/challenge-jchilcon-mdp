@@ -35,6 +35,6 @@ public interface IOrderService {
 
     public Order createOrder(Order order);
 
-    public OrderDetail createOrderDetail(OrderDetail orderDetail);
+    public OrderDetail addProductToOrderDetail(OrderDetail orderDetail);
 
 }
