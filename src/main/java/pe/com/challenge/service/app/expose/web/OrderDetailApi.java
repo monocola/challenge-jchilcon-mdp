@@ -23,8 +23,9 @@ import java.util.UUID;
  * Enero 16, 2022.
  */
 @RestController
-@RequestMapping(value = "/api/v1/orderdetail")
 @CrossOrigin(origins = "*")
+@RequestMapping(value = "/api/v1/orderdetail")
+
 public class OrderDetailApi {
 
     @Autowired
