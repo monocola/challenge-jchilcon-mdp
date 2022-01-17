@@ -5,7 +5,7 @@ info:
   description: web to orders
 
 servers:
-  - url: "/my-orders"
+  - url: "/myorders"
 
 paths:
   "/products":
