@@ -8,16 +8,23 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.com.challenge.service.app.bussines.IOrderService;
-import pe.com.challenge.service.app.dto.order.OrderDTO;
 import pe.com.challenge.service.app.dto.orderdetail.OrderDetailDTO;
-import pe.com.challenge.service.app.entity.Order;
 import pe.com.challenge.service.app.entity.OrderDetail;
+import pe.com.challenge.service.app.exeption.BeanNotFoundException;
+import pe.com.challenge.service.app.util.Constant;
 
 import java.util.UUID;
 
+/**
+ * clase controller que define los métodos necesario para listar detalle de ordenes <br/>
+ * <b>Interface</b>: IOrderService <br/>
+ *
+ * @author Jorge Homero Chilcón Perez <br/>
+ * Enero 16, 2022.
+ */
 @RestController
 @RequestMapping(value = "/api/v1/orderdetail")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "*"}, maxAge = 3500, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class OrderDetailApi {
 
     @Autowired
@@ -41,7 +48,12 @@ public class OrderDetailApi {
 
     @PutMapping
     public void updateStateCompleteOrderById(@RequestBody OrderDetail orderDetail) {
-        iOrderService.updateOrderDetail(orderDetail);
+        try {
+            iOrderService.updateOrderDetail(orderDetail);
+        } catch (Exception e){
+            throw new BeanNotFoundException(Constant.MESSAGE_NO_CONTENT);
+        }
+
     }
 
     @GetMapping("/{id}")

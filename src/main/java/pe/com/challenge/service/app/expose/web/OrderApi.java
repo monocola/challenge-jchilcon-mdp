@@ -11,13 +11,21 @@ import org.springframework.web.bind.annotation.*;
 import pe.com.challenge.service.app.bussines.IOrderService;
 import pe.com.challenge.service.app.dto.order.OrderDTO;
 import pe.com.challenge.service.app.entity.Order;
-
-import java.util.Optional;
+import pe.com.challenge.service.app.exeption.BeanNotFoundException;
+import pe.com.challenge.service.app.util.Constant;
 import java.util.UUID;
+
+/**
+ * clase controller que define los métodos necesario para listar ordenes <br/>
+ * <b>Interface</b>: iOrderService <br/>
+ *
+ * @author Jorge Homero Chilcón Perez <br/>
+ * Enero 16, 2022.
+ */
 
 @RestController
 @RequestMapping(value = "/api/v1/order")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "*"}, maxAge = 3500, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class OrderApi {
 
     @Autowired
@@ -51,11 +59,23 @@ public class OrderApi {
 
     @PutMapping("/completada/{id}")
     public void updateStateCompleteOrderById(@PathVariable UUID id) {
-        iOrderService.updateStateCompleteOrderById(id);
+        try{
+            iOrderService.updateStateCompleteOrderById(id);
+        }catch (Exception e){
+            throw new BeanNotFoundException(Constant.MESSAGE_NO_FOUND);
+        }
+
+
     }
 
     @PutMapping("/rechazada/{id}")
     public void updateStateRejectOrderById(@PathVariable UUID id) {
-        iOrderService.updateStateRejectOrderById(id);
+        try{
+            iOrderService.updateStateRejectOrderById(id);
+        }catch (Exception e){
+            throw new BeanNotFoundException(Constant.MESSAGE_NO_FOUND);
+        }
+
+
     }
 }

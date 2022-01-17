@@ -5,15 +5,33 @@ import pe.com.challenge.service.app.util.Constant;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ * clase  que define las reglas de negocio para impuestos. <br/>
+ * <b>Clases Implementadoras</b>: OrderServiceImpl <br/>
+ *
+ * @author Jorge Homero Chilcón Perez <br/>
+ * Enero 13, 2022.
+ */
 public class Tax {
 
+    /**
+     * Metodo que permite genera numero de orden aleatório.
+     * @Param null
+     * @return String
+     */
     public static String generateOrderNumber(){
         int min_val = 1001;
         int max_val = 9999;
         double randomNum = Math.random() * ( max_val - min_val );
-        return String.valueOf(randomNum);
+        Integer orderNumber = (int) randomNum;
+        return String.valueOf(orderNumber);
     }
 
+    /**
+     * Metodo que permite calcular el impuesto municipal.
+     * @Param String subTotalString
+     * @return String
+     */
     public static String getTotalCityTax(String subTotalString){
      float subTotal = Float.valueOf(subTotalString);
      float subTotalAmount = (float) (subTotal * Constant.FLOAT_0_10);
@@ -21,6 +39,11 @@ public class Tax {
      return String.valueOf(subTotalA);
     }
 
+    /**
+     * Metodo que permite calcular el impuesto del condado.
+     * @Param String subTotalString, totalCityTaxString
+     * @return String
+     */
     public static String getTotalCountTax(String subTotalString, String totalCityTaxString){
         float subTotal = Float.valueOf(subTotalString);
         float totalCityTax = Float.valueOf(totalCityTaxString);
@@ -29,6 +52,11 @@ public class Tax {
         return String.valueOf(totalCounty);
     }
 
+    /**
+     * Metodo que permite calcular el impuesto estatal.
+     * @Param String subTotalString, totalCityTaxString, subTotalCountyTaxString
+     * @return String
+     */
     public static String getTotalStateTax(String subTotalString, String totalCityTaxString, String subTotalCountyTaxString){
         float subTotal = Float.valueOf(subTotalString);
         float totalCityTax = Float.valueOf(totalCityTaxString);
@@ -39,6 +67,11 @@ public class Tax {
         return String.valueOf(totalTax);
     }
 
+    /**
+     * Metodo que permite calcular el impuesto federal.
+     * @Param String subTotalString, totalCityTaxString, subTotalCountyTax, getTotalStateTaxString
+     * @return String
+     */
     public static String getTotalFederalTax(String subTotalString, String totalCityTaxString, String subTotalCountyTax, String getTotalStateTaxString){
         float subTotal = Float.valueOf(subTotalString);
         float totalCityTax = Float.valueOf(totalCityTaxString);
@@ -50,6 +83,11 @@ public class Tax {
         return String.valueOf(totalState);
     }
 
+    /**
+     * Metodo que permite calcular el impuesto total.
+     * @Param String totalCityTaxString, subTotalCountyTax, getTotalStateTaxString, getTotalFederalTaxString
+     * @return String
+     */
     public static String getTotalTax(String totalCityTaxString, String subTotalCountyTax, String getTotalStateTaxString, String getTotalFederalTaxString){
         float totalCityTax = Float.valueOf(totalCityTaxString);
         float totalCountyTax = Float.valueOf(subTotalCountyTax);
@@ -60,6 +98,11 @@ public class Tax {
         return String.valueOf(totalTax);
     }
 
+    /**
+     * Metodo que permite calcular el monto total.
+     * @Param String subTotalString, getTotalTaxString
+     * @return String
+     */
     public static String getTotal(String subTotalString, String getTotalTaxString){
         float subTotal = Float.valueOf(subTotalString);
         float totalTax = Float.valueOf(getTotalTaxString);

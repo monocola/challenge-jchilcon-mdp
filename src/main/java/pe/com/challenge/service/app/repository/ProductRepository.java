@@ -10,6 +10,12 @@ import pe.com.challenge.service.app.entity.Product;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Interface repositorio que define los métodos necesario para mapear productos <br/>
+ *
+ * @author Jorge Homero Chilcón Perez <br/>
+ * Enero 16, 2022.
+ */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 

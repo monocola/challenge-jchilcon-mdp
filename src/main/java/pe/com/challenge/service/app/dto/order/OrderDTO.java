@@ -5,6 +5,12 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * Objeto DTO define los atributos necesario para mostrar una orden. <br/>
+ *
+ * @author Jorge Homero Chilcón Perez <br/>
+ * Enero 14, 2022.
+ */
 @Data
 public class OrderDTO {
 
